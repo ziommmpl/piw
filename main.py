@@ -1,14 +1,12 @@
-
 import cv2
 import numpy as np
 import math
 
 cap = cv2.VideoCapture('http://10.18.2.3:8080/video')
-# cap = cv2.VideoCapture(0)
 while (cap.isOpened()):
     ret, img = cap.read()
     cv2.rectangle(img, (500, 500), (100, 100), (0, 255, 0), 0)
-    crop_img = img[100:50, 100:500]
+    crop_img = img[100:500, 100:500]
     grey = cv2.cvtColor(crop_img, cv2.COLOR_BGR2GRAY)
     value = (35, 35)
     blurred = cv2.GaussianBlur(grey, value, 0)
@@ -18,12 +16,8 @@ while (cap.isOpened()):
 
     (version, _, _) = cv2.__version__.split('.')
 
-    if version is '3':
-        image, contours, hierarchy = cv2.findContours(thresh1.copy(), \
-                                                      cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
-    elif version is '2':
-        contours, hierarchy = cv2.findContours(thresh1.copy(), cv2.RETR_TREE, \
-                                               cv2.CHAIN_APPROX_NONE)
+    image, contours, hierarchy = cv2.findContours(thresh1.copy(),
+                                cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
     cnt = max(contours, key=lambda x: cv2.contourArea(x))
 
@@ -49,9 +43,9 @@ while (cap.isOpened()):
         if angle <= 90:
             count_defects += 1
             cv2.circle(crop_img, far, 1, [0, 0, 255], -1)
-        # dist = cv2.pointPolygonTest(cnt,far,True)
+        dist = cv2.pointPolygonTest(cnt,far,True)
         cv2.line(crop_img, start, end, [0, 255, 0], 2)
-        # cv2.circle(crop_img,far,5,[0,0,255],-1)
+        cv2.circle(crop_img,far,5,[0,0,255],-1)
     if count_defects == 1:
         cv2.putText(img, "I am Vipul", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
     elif count_defects == 2:
@@ -64,8 +58,8 @@ while (cap.isOpened()):
     else:
         cv2.putText(img, "Hello World!!!", (50, 50), \
                     cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
-    # cv2.imshow('drawing', drawing)
-    # cv2.imshow('end', crop_img)
+    cv2.imshow('drawing', drawing)
+    cv2.imshow('end', crop_img)
     cv2.imshow('Gesture', img)
     all_img = np.hstack((drawing, crop_img))
     cv2.imshow('Contours', all_img)
